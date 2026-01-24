@@ -18,7 +18,7 @@ public class AprilTagTest extends OpMode {
     @Override
     public void init() {
         limelight = hardwareMap.get(Limelight3A.class, "limelight"); //change this to device name
-        limelight.pipelineSwitch(8); //april tag change this!
+        limelight.pipelineSwitch(0); //april tag change this!
         imu = hardwareMap.get(IMU.class, "imu");
 //        RevHubOrientationOnRobot revHubOrientationOnRobot = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD);
     }
