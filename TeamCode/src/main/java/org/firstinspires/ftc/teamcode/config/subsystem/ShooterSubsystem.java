@@ -19,7 +19,15 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shoot() {
+        // get distance from april tag
 
+        // convert to angle
+
+        // move to angle
+
+        // convert to power
+
+        // apply this power
     }
 
     public void spoolup() {

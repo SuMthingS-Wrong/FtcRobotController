@@ -38,6 +38,7 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     public void TurretTracking() {
+        // make sure to stop if the error is less than a given value
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid()) {
             targetVisible = true;
