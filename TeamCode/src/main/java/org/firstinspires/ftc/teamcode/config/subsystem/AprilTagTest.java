@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.config.subsystem;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 //import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -10,6 +11,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import java.util.List;
 
 @TeleOp
 public class AprilTagTest extends OpMode {
@@ -41,7 +44,10 @@ public class AprilTagTest extends OpMode {
             telemetry.addData("Tx", llresult.getTx());
             telemetry.addData("Ty", llresult.getTy());
             telemetry.addData("Ta", llresult.getTa());
+            List<LLResultTypes.FiducialResult> tags = llresult.getFiducialResults();
+
             telemetry.addData("Botpose", botPose.toString());
+            telemetry.update();
         }
     }
     public double getDistanceFromTag(double ta){
