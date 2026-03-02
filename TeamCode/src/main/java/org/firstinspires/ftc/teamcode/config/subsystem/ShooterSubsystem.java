@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ShooterSubsystem extends SubsystemBase {
     private final DcMotorEx shooter1;
     private final DcMotorEx shooter2;
-
     private final Servo releaseservo;
 
     public ShooterSubsystem(final HardwareMap hMap) {

@@ -4,6 +4,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -34,14 +35,23 @@ public class ServoExamples extends OpMode {
     public void loop() {
         YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
         limelight.updateRobotOrientation(orientation.getYaw(AngleUnit.DEGREES));
+        // getting limelight result
         LLResult llresult = limelight.getLatestResult();
+        // setting the servo to the angle at which the limelight is to the april tag
         double angle = llresult.getTx()/360;
         bench.setServoPos(angle);
+
+        // intaking the artefacts
         if (gamepad1.left_trigger>0) {
-            intakeMotor.setPower(-1.2);
+            intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+            intakeMotor.setPower(0.7*gamepad1.left_trigger);
+        } else if (gamepad1.right_trigger>0) {
+        // ejecting the artefacts
+            intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+            intakeMotor.setPower(0.7*gamepad1.right_trigger);
         } else {
+        //
             intakeMotor.setPower(0);
         }
-
     }
 }
