@@ -72,7 +72,10 @@ public class Auto extends OpMode{
         switch (state){
             case START:
                 // align to april tag
-                shooter.shoot();
+                ElapsedTime firstShootingTime = new ElapsedTime();
+                if (firstShootingTime.seconds()<2){ //change time and refine
+                    shooter.shoot();
+                }
                 if (alliance == Alliance.RED){
                     state = State.TURN90CW;
                 } else if (alliance == Alliance.BLUE){
@@ -83,27 +86,27 @@ public class Auto extends OpMode{
                 ElapsedTime turningTime = new ElapsedTime();
             case DRIVETOARTEFACT:
                 ElapsedTime drivingTime = new ElapsedTime();
-                if (drivingTime.seconds() < 2 ){
-                mecanum.driveRobotCentric(0,0,0);
+                if (drivingTime.seconds() < 2 ){ // change time and arguments
+                    mecanum.driveRobotCentric(0,0,0);// change the vals with experimentation
                 }
                 // drive at a speed for a set time
             case INTAKE:
                 // Rotate Robot approx(90 deg anticlockwise) and drive forward
                 ElapsedTime intakeTime = new ElapsedTime();
-                if (intakeTime.seconds()<2){
+                if (intakeTime.seconds()<2){ //change time after
                     intakeMotor.setPower(-1.2);
                 }
                 intakeMotor.setPower(-1.2);
             case TURN90CCW:
                 ElapsedTime rotatingTime = new ElapsedTime();
                 if (rotatingTime.seconds()<2){ //change time and refine
-                    shooter.shoot();
+                    mecanum.driveRobotCentric(0,0,0);// change the vals with experimentation
                 }
                 // turn 90 degrees ccw
             case MOVETOSHOOTPOS:
                 ElapsedTime movingTime = new ElapsedTime();
                 if (movingTime.seconds()<2){ //change time and refine
-                    shooter.shoot();
+                    mecanum.driveRobotCentric(0,0,0);// change the vals with experimentation
                 }
                 // go back to shoot pos
                 // align to april tag
