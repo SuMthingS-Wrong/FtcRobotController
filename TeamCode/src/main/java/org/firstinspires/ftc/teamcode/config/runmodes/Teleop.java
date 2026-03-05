@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.arcrobotics.ftclib.util.LUT;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.config.subsystem.*;
@@ -30,6 +32,32 @@ public class Teleop extends OpMode {
     double frontRightPower;
     double backRightPower;
     private DcMotor intakeMotor;
+    private DcMotor shooterMotor1;
+    private DcMotor shooterMotor2;
+    private Servo shooterAngleServo;
+
+    // ----------------- Power ILUP ---------------- //
+
+    // distance, power
+    LUT<Double, Double> powers = new LUT<Double, Double>()
+    {{
+        add(-1.0, -1.0);
+        add(1.0, 1.0);
+        add(0.5, 0.5);
+        add(-0.5, -0.5);
+    }};
+
+    // ----------------- Servo value / Angle ILUP ---------------- //
+
+    // distance, servo value
+    LUT<Double, Double> angle = new LUT<Double, Double>()
+    {{
+        add(5.0, 1.0);
+        add(4.0, 0.9);
+        add(3.0, 0.75);
+        add(2.0, 0.5);
+        add(1.0, 0.2);
+    }};
 
 
     // ---------------- PD Controller -------------- //
@@ -73,11 +101,13 @@ public class Teleop extends OpMode {
         /* instantiate alignment subsystem */
         alignment = new AlignmentSubsystem();
 
-        /* instantiate shooter */
-        //shooter = new ShooterSubsystem(hardwareMap);
-
         /* instantiate intake motor */
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+
+        /* instantiate shooter motors and servo */
+        shooterMotor1 = hardwareMap.get(DcMotor.class, "shooterMotor1");
+        shooterMotor2 = hardwareMap.get(DcMotor.class, "shooterMotor2");
+        shooterAngleServo = hardwareMap.get(Servo.class, "shooterServo");
 
         telemetry.addLine("initialised all mechanics");
     }
@@ -234,6 +264,50 @@ public class Teleop extends OpMode {
         } else {
             intakeMotor.setPower(0);
         };
+
+        /*
+         *
+         * ================
+         *   SHOOTING MECHANISM
+         * ================
+         *
+         */
+
+        if (driver1.getButton(GamepadKeys.Button.B)){
+            telemetry.addData("Shooting","-1");
+            shooterMotor1.setPower(-1);
+            shooterMotor2.setPower(-1);
+        } else if (driver1.getButton(GamepadKeys.Button.A)) {
+            telemetry.addData("Shooting","1");
+            shooterMotor1.setPower(1);
+            shooterMotor2.setPower(1);
+        } else if (driver1.getButton(GamepadKeys.Button.Y)) {
+            telemetry.addData("Shooting", "0.5");
+            shooterMotor1.setPower(0.5);
+            shooterMotor2.setPower(0.5);
+        } else if (driver1.getButton(GamepadKeys.Button.X)) {
+            telemetry.addData("Shooting", "-0.5");
+            shooterMotor1.setPower(-0.5);
+            shooterMotor2.setPower(-0.5);
+        } else {
+            shooterMotor1.setPower(0);
+            shooterMotor2.setPower(0);
+        };
+
+
+        double servoVal = 5;
+         if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+             servoVal -= 1;
+             servoVal = servoVal % 10;
+             shooterAngleServo.setPosition(servoVal/10);
+         } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP)) {
+             servoVal += 1;
+             servoVal = servoVal % 10;
+             shooterAngleServo.setPosition(servoVal/10);
+        }
+
+
+
     }
 
 }
