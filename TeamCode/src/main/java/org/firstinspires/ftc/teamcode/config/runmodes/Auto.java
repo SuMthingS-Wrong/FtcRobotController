@@ -72,14 +72,10 @@ public class Auto extends OpMode{
         switch (state){
             case START:
                 // align to april tag
-<<<<<<< Updated upstream
                 ElapsedTime firstShootingTime = new ElapsedTime();
                 if (firstShootingTime.seconds()<2){ //change time and refine
                     shooter.shoot();
                 }
-=======
-                shooter.shoot();
->>>>>>> Stashed changes
                 if (alliance == Alliance.RED){
                     state = State.TURN90CW;
                 } else if (alliance == Alliance.BLUE){
@@ -88,46 +84,33 @@ public class Auto extends OpMode{
 
             case TURN90CW:
                 ElapsedTime turningTime = new ElapsedTime();
+                if (turningTime.seconds() < 2 ) { // change time and arguments
+                    mecanum.driveRobotCentric(0, 0, 0);// change the vals with experimentation
+                }
             case DRIVETOARTEFACT:
                 ElapsedTime drivingTime = new ElapsedTime();
-<<<<<<< Updated upstream
-                if (drivingTime.seconds() < 2 ){ // change time and arguments
-                    mecanum.driveRobotCentric(0,0,0);// change the vals with experimentation
-=======
-                if (drivingTime.seconds() < 2 ){
-                mecanum.driveRobotCentric(0,0,0);
->>>>>>> Stashed changes
+                if (drivingTime.seconds() < 2 ) { // change time and arguments
+                    mecanum.driveRobotCentric(0, 0, 0);// change the vals with experimentation
                 }
                 // drive at a speed for a set time
             case INTAKE:
                 // Rotate Robot approx(90 deg anticlockwise) and drive forward
                 ElapsedTime intakeTime = new ElapsedTime();
-<<<<<<< Updated upstream
                 if (intakeTime.seconds()<2){ //change time after
-=======
-                if (intakeTime.seconds()<2){
->>>>>>> Stashed changes
                     intakeMotor.setPower(-1.2);
                 }
-                intakeMotor.setPower(-1.2);
             case TURN90CCW:
                 ElapsedTime rotatingTime = new ElapsedTime();
                 if (rotatingTime.seconds()<2){ //change time and refine
-<<<<<<< Updated upstream
                     mecanum.driveRobotCentric(0,0,0);// change the vals with experimentation
-=======
-                    shooter.shoot();
->>>>>>> Stashed changes
+
                 }
                 // turn 90 degrees ccw
             case MOVETOSHOOTPOS:
                 ElapsedTime movingTime = new ElapsedTime();
                 if (movingTime.seconds()<2){ //change time and refine
-<<<<<<< Updated upstream
                     mecanum.driveRobotCentric(0,0,0);// change the vals with experimentation
-=======
                     shooter.shoot();
->>>>>>> Stashed changes
                 }
                 // go back to shoot pos
                 // align to april tag
@@ -143,6 +126,6 @@ public class Auto extends OpMode{
                 intakeMotor.setPower(0);
                 mecanum.driveRobotCentric(0,0,0);
 
-        };
+        }
     }
 }

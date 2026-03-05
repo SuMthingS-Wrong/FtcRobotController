@@ -3,44 +3,29 @@ package org.firstinspires.ftc.teamcode.config.runmodes;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.geometry.Pose2d;
-import com.arcrobotics.ftclib.geometry.Rotation2d;
-import com.arcrobotics.ftclib.geometry.Translation2d;
+
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.util.LUT;
-=======
 import com.qualcomm.robotcore.util.ElapsedTime;
->>>>>>> Stashed changes
-=======
-import com.qualcomm.robotcore.util.ElapsedTime;
->>>>>>> Stashed changes
+
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.config.subsystem.*;
 
 @TeleOp
 public class Teleop extends OpMode {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
     ElapsedTime autoTimer = new ElapsedTime();
     int TELEOP_TOTAL = 90;
     int PARK_BUFFER = 4; // (time it takes to park) + safety (we can experiment to find a better number)
     double timeRemaining = TELEOP_TOTAL - autoTimer.seconds();
     private MecanumDrive mecanum;
->>>>>>> Stashed changes
     private GamepadEx driver1;
     private Limelight3A limelight;
     private ShooterSubsystem shooter;
