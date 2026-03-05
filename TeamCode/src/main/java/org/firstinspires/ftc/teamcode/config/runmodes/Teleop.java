@@ -14,9 +14,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.util.LUT;
+=======
+import com.qualcomm.robotcore.util.ElapsedTime;
+>>>>>>> Stashed changes
 =======
 import com.qualcomm.robotcore.util.ElapsedTime;
 >>>>>>> Stashed changes
@@ -27,7 +31,10 @@ import org.firstinspires.ftc.teamcode.config.subsystem.*;
 @TeleOp
 public class Teleop extends OpMode {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
     ElapsedTime autoTimer = new ElapsedTime();
     int TELEOP_TOTAL = 90;
     int PARK_BUFFER = 4; // (time it takes to park) + safety (we can experiment to find a better number)
