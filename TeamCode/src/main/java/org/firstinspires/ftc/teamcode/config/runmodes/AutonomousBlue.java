@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.config.runmodes;
 
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -13,8 +11,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.config.subsystem.AlignmentSubsystem;
 import org.firstinspires.ftc.teamcode.config.subsystem.ShooterSubsystem;
 
+
 @Autonomous
-public class AutonomousRed extends LinearOpMode {
+public class AutonomousBlue extends LinearOpMode {
 
     private Limelight3A limelight;
     private ShooterSubsystem shooter;
@@ -79,7 +78,7 @@ public class AutonomousRed extends LinearOpMode {
 
         /* instantiate limelight */
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0); //april tag change this!
+        limelight.pipelineSwitch(1); //april tag change this!
 
         /* instantiate alignment subsystem */
         alignment = new AlignmentSubsystem();
