@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.config.runmodes;
 
-import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-
-import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -12,20 +10,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.arcrobotics.ftclib.util.LUT;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.teamcode.config.subsystem.*;
+import org.firstinspires.ftc.teamcode.config.subsystem.AlignmentSubsystem;
+import org.firstinspires.ftc.teamcode.config.subsystem.ShooterSubsystem;
+import org.opencv.core.Mat;
 
 @TeleOp
-public class Teleop extends OpMode {
-    ElapsedTime autoTimer = new ElapsedTime();
-    int TELEOP_TOTAL = 90;
-    int PARK_BUFFER = 4; // (time it takes to park) + safety (we can experiment to find a better number)
-    double timeRemaining = TELEOP_TOTAL - autoTimer.seconds();
-    private MecanumDrive mecanum;
+public class BaseCode extends OpMode {
     private GamepadEx driver1;
     private Limelight3A limelight;
     private ShooterSubsystem shooter;
@@ -43,29 +35,6 @@ public class Teleop extends OpMode {
     private DcMotor shooterMotor2;
     private Servo shooterAngleServo;
 
-    // ----------------- Power ILUP ---------------- //
-
-    // ta, power
-    LUT<Double, Double> powers = new LUT<Double, Double>()
-    {{
-        add(0.88, 0.6);
-        add(0.88, 1.0);
-        add(0.5, 0.5);
-        add(-0.5, -0.5);
-    }};
-
-    // ----------------- Servo value / Angle ILUP ---------------- //
-
-    // ta, servo value
-    LUT<Double, Double> angle = new LUT<Double, Double>()
-    {{
-        add(0.88, 0.6);
-        add(4.0, 0.9);
-        add(3.0, 0.75);
-        add(2.0, 0.5);
-        add(1.0, 0.2);
-    }};
-
 
     // ---------------- PD Controller -------------- //
 
@@ -81,6 +50,7 @@ public class Teleop extends OpMode {
 
     double servoVal = 5;
     double shooterPower = 5;
+    double shooterCurrentPower = 0;
 
     double lastPressed = getRuntime();
 
@@ -135,26 +105,6 @@ public class Teleop extends OpMode {
         currTime = getRuntime();
     }
 
-    public void setShooterPower(double power) {
-        ElapsedTime shooterTimer = new ElapsedTime();
-
-        int steps = 5; // number of steps to take to go from zero to desired power
-        double stepPower = power / steps; // power increase per step
-        long stepTime = 200;
-
-        for (int i = 1; i <= steps; i++) {
-            double currentPower = stepPower * i;
-
-            shooterMotor1.setPower(currentPower);
-            shooterMotor2.setPower(-currentPower);
-
-            shooterTimer.reset();
-            while (shooterTimer.milliseconds() < stepTime) {
-                // wait
-            }
-        }
-    }
-
     @Override
     public void loop() {
 
@@ -169,7 +119,7 @@ public class Teleop extends OpMode {
         // get limelight reading
         LLResult llresult = limelight.getLatestResult();
         if (llresult.isValid()) {
-            telemetry.addData("Ta",llresult.getTa());
+            telemetry.addData("Ta", llresult.getTa());
         }
 
         /*
@@ -185,7 +135,7 @@ public class Teleop extends OpMode {
         double yaw;
         double max;
 
-        axial = -gamepad1.left_stick_y;
+        axial = gamepad1.left_stick_y;
         lateral = -gamepad1.left_stick_x;
         yaw = -gamepad1.right_stick_x;
 
@@ -198,7 +148,7 @@ public class Teleop extends OpMode {
          */
 
         // if right trigger pressed, align the robot to the goal by turning the drivetrain
-        if (driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)>0.3){
+        if (driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3) {
             if (llresult.isValid()) {
 
                 error = goalX - llresult.getTx();
@@ -208,14 +158,14 @@ public class Teleop extends OpMode {
 
                 } else {
 
-                    telemetry.addData("Auto aligning","True");
+                    telemetry.addData("Auto aligning", "True");
 
                     double pTerm = error * kP;
                     currTime = getRuntime();
                     double deltaTime = currTime - lastTime;
                     double dTerm = ((error - lastError) / deltaTime) * kD;
-                    telemetry.addData("Yaw", pTerm+dTerm);
-                    if (pTerm +dTerm < -0.4) {
+                    telemetry.addData("Yaw", pTerm + dTerm);
+                    if (pTerm + dTerm < -0.4) {
                         yaw = -0.4;
                     } else if (pTerm + dTerm > 0.4) {
                         yaw = 0.4;
@@ -269,25 +219,27 @@ public class Teleop extends OpMode {
 
 
         /*
-        *
-        * ================
-        *   INTAKE MECHANISM
-        * ================
-        *
-        */
+         *
+         * ================
+         *   INTAKE MECHANISM
+         * ================
+         *
+         */
 
         // if left trigger pressed, turn intake inwards
         // if left bumper pressed, outtake the artefact
         // otherwise, no power to the motor
-        if (driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0){
-            telemetry.addData("Intaking","True");
-            intakeMotor.setPower(-1*driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+        if (driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) {
+            telemetry.addData("Intaking", "True");
+            intakeMotor.setPower(-1 * driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
         } else if (driver1.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-            telemetry.addData("Outtaking","True");
+            telemetry.addData("Outtaking", "True");
             intakeMotor.setPower(1);
+            shooterMotor1.setPower(-0.3);
+            shooterMotor1.setPower(-0.3);
         } else if (!shooting) {
             intakeMotor.setPower(0);
-        };
+        }
 
         /*
          *
@@ -299,93 +251,49 @@ public class Teleop extends OpMode {
 
         // testing
 
-        if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) && getRuntime()-lastPressed > 0.25) {
+        if (driver1.getButton(GamepadKeys.Button.DPAD_DOWN) && getRuntime()-lastPressed > 0.2) {
             servoVal -= 1;
             servoVal = servoVal % 10;
+            servoVal = Math.abs(servoVal);
             shooterAngleServo.setPosition(servoVal/10);
             lastPressed = getRuntime();
 
-        } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) && getRuntime()-lastPressed > 0.25) {
+        } else if (driver1.getButton(GamepadKeys.Button.DPAD_UP) && getRuntime()-lastPressed > 0.2) {
             servoVal += 1;
             servoVal = servoVal % 10;
+            servoVal = Math.abs(servoVal);
             shooterAngleServo.setPosition(servoVal/10);
             lastPressed = getRuntime();
         }
 
         telemetry.addData("servo pos",servoVal/10);
 
-        if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) && getRuntime()-lastPressed > 0.25) {
+        if (driver1.getButton(GamepadKeys.Button.DPAD_LEFT) && getRuntime()-lastPressed > 0.2) {
             shooterPower -= 0.5;
-            shooterPower = shooterPower % 10;
+            if (shooterPower < 0) {
+                shooterPower = 0;
+            }
             lastPressed = getRuntime();
-        } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) && getRuntime()-lastPressed > 0.25) {
+        } else if (driver1.getButton(GamepadKeys.Button.DPAD_RIGHT) && getRuntime()-lastPressed > 0.2) {
             shooterPower += 0.5;
-            shooterPower = shooterPower % 10;
+            if (shooterPower > 10) {
+                shooterPower = 10;
+            }
             lastPressed = getRuntime();
         }
         telemetry.addData("power",shooterPower/10);
 
-        /*
-        if (driver1.getButton(GamepadKeys.Button.B) && !shooting) {
-            shooting = true;
-            setShooterPower(shooterPower/10);
-            // setShooterPower(powers.get(llresult.getTa()))
-        } else {
-            shooting = false;
+        // SHOOTING
+        if (driver1.getButton(GamepadKeys.Button.B)) {
+            shooterCurrentPower = (shooterPower + shooterCurrentPower * 19) / 20;
+            shooterMotor1.setPower(shooterCurrentPower/10);
+            shooterMotor2.setPower(-shooterCurrentPower/10);
+        }
+        else {
+            shooterCurrentPower *= 0.95;
             shooterMotor1.setPower(0);
             shooterMotor2.setPower(0);
-        } */
-
-
-        // when the lookup table is filled
-        currB = driver1.getButton(GamepadKeys.Button.B);
-        if (!prevB && currB) { // && getRuntime()-lastPressed>0.2) {
-
-            // outtake the ball slightly so we can power up shooter motors without shooting yet
-
-            //intakeMotor.setPower(1);
-            //try {
-            //    ElapsedTime elapsedTime = new ElapsedTime();
-            //    (100);
-            //} catch (InterruptedException e) {
-            //    Thread.currentThread().interrupt();
-            //}
-
-            //intakeMotor.setPower(0);
-
-            // get servoPos given TA
-            //double servoVal = angle.get(llresult.getTa());
-
-            // set angle
-            shooterAngleServo.setPosition(servoVal/10);
-
-            // get power given TA
-            //double shooterPower = powers.get(llresult.getTa());
-
-            // set power
-            setShooterPower(shooterPower/10);
-
-            // run intake so the ball is shot
-            //intakeMotor.setPower(-1);
-            //try {
-            //    Thread.sleep(600);
-            //} catch (InterruptedException e) {
-            //    Thread.currentThread().interrupt();
-            //}
-            //intakeMotor.setPower(0);
-            //try {
-            //    Thread.sleep(600);
-            //} catch (InterruptedException e) {
-            //    Thread.currentThread().interrupt();
-            //}
-
-        } else {
-            setShooterPower(0);
         }
-
-        prevB = currB;
-
-
     }
 
 }
