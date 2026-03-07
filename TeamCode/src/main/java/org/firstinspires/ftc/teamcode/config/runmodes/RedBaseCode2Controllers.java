@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.config.subsystem.AlignmentSubsystem;
 import org.firstinspires.ftc.teamcode.config.subsystem.ShooterSubsystem;
 
 @TeleOp
-public class BaseCode2Controllers extends OpMode {
+public class RedBaseCode2Controllers extends OpMode {
     private GamepadEx driver1;
     private GamepadEx driver2;
     private Limelight3A limelight;

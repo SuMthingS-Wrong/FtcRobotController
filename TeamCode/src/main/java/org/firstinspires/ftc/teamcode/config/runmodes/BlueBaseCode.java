@@ -2,22 +2,19 @@ package org.firstinspires.ftc.teamcode.config.runmodes;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.util.LUT;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.config.subsystem.AlignmentSubsystem;
 import org.firstinspires.ftc.teamcode.config.subsystem.ShooterSubsystem;
-import org.opencv.core.Mat;
 
 @TeleOp
-public class BaseCode extends OpMode {
+public class BlueBaseCode extends OpMode {
     private GamepadEx driver1;
     private Limelight3A limelight;
     private ShooterSubsystem shooter;
@@ -83,7 +80,7 @@ public class BaseCode extends OpMode {
 
         /* instantiate limelight */
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0); //april tag change this!
+        limelight.pipelineSwitch(1); //april tag change this!
 
         /* instantiate alignment subsystem */
         alignment = new AlignmentSubsystem();
